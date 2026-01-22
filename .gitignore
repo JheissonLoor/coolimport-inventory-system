@@ -1,0 +1,51 @@
+# ==================================
+# 🔐 SECRETOS / CREDENCIALES
+# ==================================
+_internal/credentials/
+credentials/
+secrets/
+*.json
+.env
+.env.local
+.env.production
+
+# ==================================
+# ☕ JAVA / MAVEN / GRADLE
+# ==================================
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# ==================================
+# 🟢 NODE / NPM
+# ==================================
+node_modules/
+dist/
+coverage/
+npm-debug.log*
+yarn-error.log*
+
+# ==================================
+# 🧠 IDEs y editores
+# ==================================
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ==================================
+# 🖥️ SISTEMA OPERATIVO
+# ==================================
+.DS_Store
+Thumbs.db
+
+# ==================================
+# 📄 LOGS
+# ==================================
+*.log
+logs/

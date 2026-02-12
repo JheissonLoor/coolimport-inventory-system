@@ -1,5 +1,5 @@
 # ==================================
-# 🔐 SECRETOS / CREDENCIALES
+#  SECRETOS / CREDENCIALES
 # ==================================
 _internal/credentials/
 credentials/
@@ -10,7 +10,7 @@ secrets/
 .env.production
 
 # ==================================
-# ☕ JAVA / MAVEN / GRADLE
+#  JAVA / MAVEN / GRADLE
 # ==================================
 target/
 build/
@@ -21,7 +21,7 @@ out/
 *.ear
 
 # ==================================
-# 🟢 NODE / NPM
+#  NODE / NPM
 # ==================================
 node_modules/
 dist/
@@ -30,7 +30,7 @@ npm-debug.log*
 yarn-error.log*
 
 # ==================================
-# 🧠 IDEs y editores
+#  IDEs y editores
 # ==================================
 .vscode/
 .idea/
@@ -39,13 +39,13 @@ yarn-error.log*
 *.iws
 
 # ==================================
-# 🖥️ SISTEMA OPERATIVO
+#  SISTEMA OPERATIVO
 # ==================================
 .DS_Store
 Thumbs.db
 
 # ==================================
-# 📄 LOGS
+#  LOGS
 # ==================================
 *.log
 logs/

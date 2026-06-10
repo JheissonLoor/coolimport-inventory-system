@@ -1,51 +1,37 @@
-# ==================================
-#  SECRETOS / CREDENCIALES
-# ==================================
-_internal/credentials/
-credentials/
+# Secretos y configuracion local
+credentials/*
+!credentials/README.md
 secrets/
-*.json
+config.py
 .env
-.env.local
-.env.production
+*.env
+*.json
 
-# ==================================
-#  JAVA / MAVEN / GRADLE
-# ==================================
-target/
+# Artefactos PyInstaller y ejecutables
+_internal/
+*.exe
+*.lnk
 build/
-out/
-*.class
-*.jar
-*.war
-*.ear
-
-# ==================================
-#  NODE / NPM
-# ==================================
-node_modules/
 dist/
-coverage/
-npm-debug.log*
-yarn-error.log*
+*.spec
 
-# ==================================
-#  IDEs y editores
-# ==================================
-.vscode/
-.idea/
-*.iml
-*.ipr
-*.iws
+# Python
+__pycache__/
+*.pyc
 
-# ==================================
-#  SISTEMA OPERATIVO
-# ==================================
-.DS_Store
-Thumbs.db
-
-# ==================================
-#  LOGS
-# ==================================
+# Archivos generados por la app
+sticker.pdf
+temp_qr*.png
+logs_consola.pdf
 *.log
 logs/
+
+# Entornos y herramientas
+.venv/
+venv/
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

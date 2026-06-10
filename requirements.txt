@@ -1,0 +1,11 @@
+flask
+fpdf
+pillow
+PyQt5
+pywin32
+gspread
+oauth2client
+supabase
+qrcode
+requests
+google-auth

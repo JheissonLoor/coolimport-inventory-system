@@ -1,0 +1,10 @@
+import qrcode
+import json
+
+# Pega aquí el valor de "qrCode" tal cual lo recibiste (incluyendo las llaves)
+qr_payload = '''{"android.app.extra.PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME\":\"com.google.android.apps.work.clouddpc/.receivers.CloudDeviceAdminReceiver\",\"android.app.extra.PROVISIONING_DEVICE_ADMIN_SIGNATURE_CHECKSUM\":\"I5YvS0O5hXY46mb01BlRjq4oJJGs2kuUcHvVkAPEXlg\",\"android.app.extra.PROVISIONING_DEVICE_ADMIN_PACKAGE_DOWNLOAD_LOCATION\":\"https://play.google.com/managed/downloadManagingApp?identifier=setup\",\"android.app.extra.PROVISIONING_ADMIN_EXTRAS_BUNDLE\":{\"com.google.android.apps.work.clouddpc.EXTRA_ENROLLMENT_TOKEN\":\"WXVULYFTDQXCMAVYSZUN"}}'''
+
+# Generar el QR
+img = qrcode.make(qr_payload)
+img.save("enrollment_qr.png")
+print("QR guardado como enrollment_qr.png")

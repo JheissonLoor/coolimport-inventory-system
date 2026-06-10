@@ -17,7 +17,26 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import time
 from supabase import create_client, Client
-from config import SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_KEY
+import config as app_config
+
+
+def require_config_value(name):
+    value = getattr(app_config, name, "")
+    if not value:
+        raise RuntimeError(f"Configura {name} en config.py")
+    return value
+
+
+SUPABASE_URL = require_config_value("SUPABASE_URL")
+SUPABASE_KEY = require_config_value("SUPABASE_KEY")
+SUPABASE_SERVICE_KEY = require_config_value("SUPABASE_SERVICE_KEY")
+GOOGLE_CREDENTIALS_FILE = require_config_value("GOOGLE_CREDENTIALS_FILE")
+STOCK_SPREADSHEET_ID = require_config_value("STOCK_SPREADSHEET_ID")
+AUXILIARY_SPREADSHEET_ID = require_config_value("AUXILIARY_SPREADSHEET_ID")
+WORKSHEET_STOCK = require_config_value("WORKSHEET_STOCK")
+WORKSHEET_ALMACEN_MOVIMIENTOS = require_config_value("WORKSHEET_ALMACEN_MOVIMIENTOS")
+WORKSHEET_DATOS_KARDEX = require_config_value("WORKSHEET_DATOS_KARDEX")
+WORKSHEET_STOCK_ACTUAL = require_config_value("WORKSHEET_STOCK_ACTUAL")
 
 # Cliente administrativo (para operaciones CRUD con service_role)
 supabase_admin: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
@@ -50,7 +69,7 @@ CACHE_TTL = 60 * 5  # 5 minutos
 def get_almacen_data():
     now = time.time()
     if now - ALMACEN_CACHE["last_update"] > ALMACEN_UPDATE_INTERVAL:
-        almacen_sheet = client.open_by_key("1_BRF7YyRkkT6f6qwioliJ07nYz_KLMaJko8brQHkTZM").worksheet("Movimientos del almacen")
+        almacen_sheet = client.open_by_key(AUXILIARY_SPREADSHEET_ID).worksheet(WORKSHEET_ALMACEN_MOVIMIENTOS)
         ALMACEN_CACHE["data"] = almacen_sheet.get_all_values()
         ALMACEN_CACHE["last_update"] = now
     return ALMACEN_CACHE["data"]
@@ -91,9 +110,7 @@ def connect_to_sheets():
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds_path = get_resource_path(
-        "credentials/caramel-world-440315-k1-a924505ccb68.json"
-    )
+    creds_path = get_resource_path(GOOGLE_CREDENTIALS_FILE)
     creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
     client = gspread.authorize(creds)
     return client
@@ -101,9 +118,7 @@ def connect_to_sheets():
 
 # Conectar con la hoja de Google Sheets
 client = connect_to_sheets()
-sheet = client.open_by_key("1Omo6PO527wSJstlavDlywSHOBmXp3c2NfhYwkMKyoOs").worksheet(
-    "STOCK"
-)
+sheet = client.open_by_key(STOCK_SPREADSHEET_ID).worksheet(WORKSHEET_STOCK)
 
 app = Flask(__name__)
 
@@ -146,7 +161,7 @@ def generar_kardex():
             return jsonify({"error": "Todos los campos ('material', 'titulo', 'color') son obligatorios."}), 400
 
         # Conectar con la hoja "datosKardex"
-        kardex_sheet = client.open_by_key("1_BRF7YyRkkT6f6qwioliJ07nYz_KLMaJko8brQHkTZM").worksheet("datosKardex")
+        kardex_sheet = client.open_by_key(AUXILIARY_SPREADSHEET_ID).worksheet(WORKSHEET_DATOS_KARDEX)
 
         # Obtener todas las filas de la hoja
         rows = kardex_sheet.get_all_values()
@@ -197,7 +212,7 @@ def consulta_stock_actual():
         log_message(f"Buscando el código PCP: {codigopcp}")
 
         # Conectar con la hoja "Stock Actual"
-        stock_sheet = client.open_by_key("1_BRF7YyRkkT6f6qwioliJ07nYz_KLMaJko8brQHkTZM").worksheet("Stock Actual")
+        stock_sheet = client.open_by_key(AUXILIARY_SPREADSHEET_ID).worksheet(WORKSHEET_STOCK_ACTUAL)
 
         # Buscar el código PCP en la columna 1 (CodigoPCP)
         cell = stock_sheet.find(codigopcp, in_column=1)

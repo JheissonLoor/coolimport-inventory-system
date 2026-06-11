@@ -13,6 +13,7 @@ _internal/
 *.lnk
 build/
 dist/
+release/
 *.spec
 
 # Python

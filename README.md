@@ -1,17 +1,76 @@
-# API CoolImport V6.2.0
+<p align="center">
+  <img src="img/logo_api.png" alt="API CoolImport" width="120">
+</p>
 
-Servidor local de impresion para CoolImport. Es una aplicacion Flask + PyQt5 que recibe datos desde la app movil, genera una etiqueta `sticker.pdf` con QR y texto, y la envia a una impresora Zebra.
+<h1 align="center">API CoolImport V6.2.0</h1>
 
-La aplicacion trabaja con Google Sheets y Supabase. No genera archivos Excel locales.
+<p align="center">
+  Servidor local de impresion para etiquetas textiles, QR, Kardex, Google Sheets, Supabase y Zebra.
+</p>
 
-## Requisitos
+<p align="center">
+  <a href="https://github.com/JheissonLoor/coolimport-inventory-system/releases/tag/v6.2.0">
+    <img alt="Release" src="https://img.shields.io/badge/release-v6.2.0-0B6BFF">
+  </a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.11-111827">
+  <img alt="Windows" src="https://img.shields.io/badge/windows-supported-0078D4">
+  <img alt="Secrets" src="https://img.shields.io/badge/secrets-not_in_repo-16A34A">
+</p>
 
-- Python 3.11 recomendado.
-- Windows, porque la impresion usa `pywin32`.
+---
+
+## Que es
+
+API CoolImport es una app de escritorio para Windows hecha con Flask + PyQt5. Recibe datos desde la app movil, genera una etiqueta `sticker.pdf` con QR y texto, y la envia a una impresora Zebra.
+
+No trabaja con Excel local. La informacion viene de Google Sheets y Supabase.
+
+## Flujo principal
+
+| Paso | Componente | Resultado |
+| --- | --- | --- |
+| 1 | App movil | Envia QR, texto y acciones de inventario |
+| 2 | Flask local | Recibe requests en la red local |
+| 3 | Google Sheets / Supabase | Consulta stock, Kardex y datos auxiliares |
+| 4 | Generador PDF | Crea `sticker.pdf` con QR y texto |
+| 5 | PyQt5 + Windows Print | Muestra logs y envia a Zebra |
+
+```mermaid
+flowchart LR
+    A["App movil"] --> B["Flask local"]
+    B --> C["Google Sheets"]
+    B --> D["Supabase"]
+    B --> E["sticker.pdf"]
+    E --> F["Zebra / Windows Print"]
+    B --> G["Panel PyQt5"]
+```
+
+## Descargar version Windows
+
+La version compilada esta publicada como release:
+
+[Descargar API CoolImport V6.2.0](https://github.com/JheissonLoor/coolimport-inventory-system/releases/tag/v6.2.0)
+
+El ZIP del release incluye el `.exe`, `_internal/` y archivos de ejemplo. No incluye `config.py`, `.env` ni JSON reales de Google.
+
+Para usar el ZIP:
+
+1. Descomprime `API-CoolImport-V6.2.0-windows.zip`.
+2. Copia `config.example.py` como `config.py`.
+3. Completa Supabase y Google Sheets en `config.py`.
+4. Coloca el JSON de Google en `credentials/`.
+5. Ejecuta `API CoolImport V6.2.0.exe`.
+
+## Ejecutar desde codigo fuente
+
+Requisitos:
+
+- Python 3.11.
+- Windows.
 - Credenciales de Google Sheets en formato JSON.
 - Variables de Supabase y Google Sheets en `config.py`.
 
-## Instalacion
+Instalacion:
 
 ```powershell
 python -m venv .venv
@@ -19,11 +78,15 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+Ejecucion:
+
+```powershell
+python generar_qr_pdf.py
+```
+
 ## Configuracion
 
-1. Copia `config.example.py` como `config.py`.
-2. Copia `.env.example` como referencia si prefieres manejar los valores como variables de entorno.
-3. Completa estos valores en `config.py`:
+Copia `config.example.py` como `config.py` y completa:
 
 ```python
 SUPABASE_URL = ""
@@ -41,55 +104,74 @@ WORKSHEET_DATOS_KARDEX = "datosKardex"
 WORKSHEET_STOCK_ACTUAL = "Stock Actual"
 ```
 
-4. Coloca los JSON de Google dentro de `credentials/`.
-5. Verifica que `GOOGLE_CREDENTIALS_FILE` apunte al JSON correcto.
+Reglas de seguridad:
 
-`config.py`, `.env` y los JSON de `credentials/` estan ignorados por git porque contienen llaves privadas o datos de entorno.
-
-## Ejecutar en desarrollo
-
-```powershell
-python generar_qr_pdf.py
-```
-
-La app abre una interfaz PyQt5 y expone los endpoints Flask usados por el sistema movil.
+- `config.py` no se sube al repo.
+- `.env` no se sube al repo.
+- Los JSON de `credentials/` no se suben al repo.
+- El release no trae credenciales reales.
 
 ## Compilar EXE
 
-Instala PyInstaller solo en el entorno de build:
+Instala PyInstaller si no lo tienes:
 
 ```powershell
 pip install pyinstaller
 ```
 
-Compila con el script incluido:
+Compila:
 
 ```powershell
 .\build.ps1
 ```
 
-El script usa modo `onedir`, ventana sin consola, `--add-data` para `img`, y el icono `logo_apì_ico.ico`.
+El build queda en:
 
-El build copia `README.md`, `config.example.py`, `.env.example` y `credentials/README.md` al directorio `dist`. No copia JSON reales de Google ni `config.py`.
+```text
+dist/API CoolImport V6.2.0/
+```
 
-## Publicar un release
+El script copia al build:
 
-El release de GitHub debe llevar un `.zip` del contenido de `dist/API CoolImport V6.2.0`, no la carpeta `dist/` dentro del repositorio.
+- `README.md`
+- `config.example.py`
+- `.env.example`
+- `credentials/README.md`
+- assets de `img/`
 
-El ZIP publicado contiene el ejecutable y sus dependencias, pero no incluye credenciales reales. Para usarlo en una PC:
+No copia `config.py` ni JSON reales.
 
-1. Descomprime el ZIP.
-2. Copia `config.example.py` como `config.py`.
-3. Completa Supabase y Google Sheets en `config.py`.
-4. Coloca el JSON de Google en `credentials/`.
-5. Ejecuta `API CoolImport V6.2.0.exe`.
+## Publicar release
 
-## Archivos que no se suben
+El release debe llevar un ZIP del contenido de `dist/API CoolImport V6.2.0`, no `dist/` versionado en git.
 
-No subas al repositorio:
+Ejemplo:
+
+```powershell
+Compress-Archive -Path "dist\API CoolImport V6.2.0\*" -DestinationPath "release\API-CoolImport-V6.2.0-windows.zip" -Force
+gh release create v6.2.0 "release\API-CoolImport-V6.2.0-windows.zip" --title "API CoolImport V6.2.0" --notes "Build Windows del servidor local de impresion."
+```
+
+## Estructura del repo
+
+```text
+.
+|-- generar_qr_pdf.py       # App Flask + PyQt5 principal
+|-- generar_qr.py           # Utilidad QR
+|-- enterprise.py           # Utilidad enterprise / auth
+|-- img/                    # Logos e imagenes del UI
+|-- credentials/README.md   # Guia para llaves Google ignoradas
+|-- config.example.py       # Plantilla de configuracion
+|-- .env.example            # Plantilla opcional de variables
+|-- build.ps1               # Build Windows con PyInstaller
+`-- requirements.txt
+```
+
+## Archivos que nunca se suben
 
 - `build/`
 - `dist/`
+- `release/`
 - `*.spec`
 - `_internal/`
 - `*.exe`
@@ -98,15 +180,20 @@ No subas al repositorio:
 - `logs_consola.pdf`
 - `config.py`
 - `.env`
-- archivos JSON dentro de `credentials/`
-
-El repositorio debe contener codigo fuente, assets necesarios y documentacion; los artefactos compilados se regeneran localmente.
+- JSON dentro de `credentials/`
 
 ## Propuestas de mejora
 
-- Rotar las llaves de Google y Supabase que hayan estado en builds o historiales antiguos antes de volver a publicar releases.
-- Crear un endpoint `/health` que valide conexion a Supabase, Google Sheets e impresora sin generar etiquetas.
-- Mover los nombres de impresora, IPs conocidas y parametros de etiqueta a `config.py` para no editar codigo por cada equipo.
-- Agregar un modo `DRY_RUN_PRINT=True` para generar `sticker.pdf` sin mandar a la Zebra durante pruebas.
-- Crear pruebas simples para `/generar_kardex` y `/consulta_pcp` usando mocks de Google Sheets.
-- Crear un release de GitHub solo con el `.exe` compilado, manteniendo el repo principal solo con codigo fuente.
+- Crear `/health` para validar Supabase, Google Sheets e impresora sin generar etiquetas.
+- Agregar `DRY_RUN_PRINT=True` para probar PDF sin enviar a Zebra.
+- Mover IPs conocidas, nombres de impresora y tamanos de etiqueta a `config.py`.
+- Agregar tests para `/generar_kardex` y `/consulta_pcp` con mocks de Google Sheets.
+- Crear logs rotativos en archivo para diagnosticar errores sin depender solo de la ventana PyQt5.
+- Agregar version visible en la ventana para confirmar que la PC corre el build correcto.
+- Automatizar releases con GitHub Actions cuando el proyecto ya no dependa del entorno local de Windows.
+
+---
+
+<p align="center">
+  Repo de codigo fuente limpio. Builds y credenciales viven fuera de git.
+</p>

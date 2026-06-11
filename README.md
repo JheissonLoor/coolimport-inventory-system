@@ -68,7 +68,21 @@ Compila con el script incluido:
 .\build.ps1
 ```
 
-El script usa modo `onedir`, ventana sin consola, `--add-data` para `credentials` e `img`, y el icono `logo_apì_ico.ico`.
+El script usa modo `onedir`, ventana sin consola, `--add-data` para `img`, y el icono `logo_apì_ico.ico`.
+
+El build copia `README.md`, `config.example.py`, `.env.example` y `credentials/README.md` al directorio `dist`. No copia JSON reales de Google ni `config.py`.
+
+## Publicar un release
+
+El release de GitHub debe llevar un `.zip` del contenido de `dist/API CoolImport V6.2.0`, no la carpeta `dist/` dentro del repositorio.
+
+El ZIP publicado contiene el ejecutable y sus dependencias, pero no incluye credenciales reales. Para usarlo en una PC:
+
+1. Descomprime el ZIP.
+2. Copia `config.example.py` como `config.py`.
+3. Completa Supabase y Google Sheets en `config.py`.
+4. Coloca el JSON de Google en `credentials/`.
+5. Ejecuta `API CoolImport V6.2.0.exe`.
 
 ## Archivos que no se suben
 

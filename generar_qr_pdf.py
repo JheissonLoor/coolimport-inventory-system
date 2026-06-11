@@ -12,12 +12,35 @@ import socket
 import win32print
 import win32api
 import os
+import importlib.util
 from datetime import datetime
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import time
 from supabase import create_client, Client
-import config as app_config
+
+
+def get_app_base_path():
+    if getattr(sys, "frozen", False):
+        return os.path.dirname(sys.executable)
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def load_app_config():
+    config_path = os.path.join(get_app_base_path(), "config.py")
+    if not os.path.exists(config_path):
+        raise RuntimeError(
+            f"No se encontro config.py en {get_app_base_path()}. "
+            "Copia config.example.py como config.py y completa tus credenciales."
+        )
+
+    spec = importlib.util.spec_from_file_location("coolimport_config", config_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+app_config = load_app_config()
 
 
 def require_config_value(name):
@@ -110,7 +133,9 @@ def connect_to_sheets():
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds_path = get_resource_path(GOOGLE_CREDENTIALS_FILE)
+    creds_path = GOOGLE_CREDENTIALS_FILE
+    if not os.path.isabs(creds_path):
+        creds_path = os.path.join(get_app_base_path(), creds_path)
     creds = ServiceAccountCredentials.from_json_keyfile_name(creds_path, scope)
     client = gspread.authorize(creds)
     return client
